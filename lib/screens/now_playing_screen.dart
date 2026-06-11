@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../provider/audio_provider.dart';
+import '../widgets/music_image.dart';
 
 class NowPlayingScreen extends ConsumerWidget {
   const NowPlayingScreen({super.key});
@@ -64,8 +65,8 @@ class NowPlayingScreen extends ConsumerWidget {
                         Center(
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(18),
-                            child: Image.network(
-                              audioState.imageUrl ?? "",
+                            child: MusicImage(
+                              imageUrl: audioState.imageUrl ?? "",
                               height: imageSize,
                               width: imageSize,
                               fit: BoxFit.cover,

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../provider/category_provider.dart';
 import 'playlist_detail_screen.dart';
-import '../widgets/mini_player.dart';          // ⬅ Added
+import '../widgets/mini_player.dart';
+import '../widgets/music_image.dart';
 
 class CategoryPlaylistsScreen extends ConsumerStatefulWidget {
   final String categoryId;
@@ -84,8 +85,8 @@ class _CategoryPlaylistsScreenState
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: Image.network(
-                              playlist["image"]!,
+                            child: MusicImage(
+                              imageUrl: playlist["image"]!,
                               height: 130,
                               width: double.infinity,
                               fit: BoxFit.cover,

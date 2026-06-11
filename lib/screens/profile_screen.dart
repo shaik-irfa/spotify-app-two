@@ -103,6 +103,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../auth/login_screen.dart';
+import '../widgets/music_image.dart';
 
 class ProfileScreen extends StatelessWidget {
   final String username;
@@ -145,8 +146,14 @@ class ProfileScreen extends StatelessWidget {
             Center(
               child: CircleAvatar(
                 radius: 60,
-                backgroundImage: NetworkImage(
-                  "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+                backgroundColor: const Color(0xFF1A1A1A),
+                child: ClipOval(
+                  child: MusicImage(
+                    imageUrl: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+                    width: 120,
+                    height: 120,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),

@@ -244,6 +244,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../provider/audio_provider.dart';
 import '../screens/now_playing_screen.dart';
+import 'music_image.dart';
 
 class MiniPlayer extends ConsumerWidget {
   const MiniPlayer({super.key});
@@ -281,8 +282,8 @@ class MiniPlayer extends ConsumerWidget {
             // ===== Album / Playlist Image =====
             ClipRRect(
               borderRadius: BorderRadius.circular(6),
-              child: Image.network(
-                audioState.imageUrl ?? "",
+              child: MusicImage(
+                imageUrl: audioState.imageUrl ?? "",
                 width: 46,
                 height: 46,
                 fit: BoxFit.cover,

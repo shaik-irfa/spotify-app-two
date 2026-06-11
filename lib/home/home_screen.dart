@@ -273,6 +273,7 @@ import '../screens/album_detail_screen.dart';
 import '../screens/profile_screen.dart';
 import '../auth/login_screen.dart';
 import '../widgets/mini_player.dart';
+import '../widgets/music_image.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -384,9 +385,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       appBar: AppBar(
         backgroundColor: Colors.black,
         elevation: 0,
-        title: Image.network(
-          "https://cdn-icons-png.flaticon.com/512/727/727240.png",
+        title: MusicImage(
+          imageUrl: "https://cdn-icons-png.flaticon.com/512/727/727240.png",
+          width: 26,
           height: 26,
+          fit: BoxFit.contain,
         ),
         actions: [
           IconButton(
@@ -513,8 +516,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: Image.network(
-                      item["image"]!,
+                    child: MusicImage(
+                      imageUrl: item["image"]!,
                       height: 110,
                       width: 110,
                       fit: BoxFit.cover,

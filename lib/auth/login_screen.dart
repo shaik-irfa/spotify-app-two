@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../home/home_screen.dart';
 import '../provider/auth_provider.dart';
+import '../widgets/music_image.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -25,7 +26,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     "https://images.unsplash.com/photo-1506157786151-b8491531f063?w=300&q=80",
     "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=300&q=80",
     "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=300&q=80",
-    "https://images.unsplash.com/photo-1487180142328-054b783fc471?w=300&q=80",
+    "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=300&q=80",
     "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300&q=80",
     "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&q=80",
     "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=300&q=80",
@@ -67,10 +68,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     return Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        image: DecorationImage(
-                          image: NetworkImage(albumCovers[index]),
-                          fit: BoxFit.cover,
-                        ),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.3),
@@ -78,6 +75,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             offset: const Offset(0, 4),
                           )
                         ],
+                      ),
+                      child: MusicImage(
+                        imageUrl: albumCovers[index],
+                        width: double.infinity,
+                        height: double.infinity,
+                        fit: BoxFit.cover,
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     );
                   },

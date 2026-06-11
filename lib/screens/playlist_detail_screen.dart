@@ -359,6 +359,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../provider/playlist_provider.dart';
 import '../provider/audio_provider.dart';
 import '../widgets/mini_player.dart';
+import '../widgets/music_image.dart';
 
 class PlaylistDetailScreen extends ConsumerStatefulWidget {
   final String playlistId;
@@ -425,8 +426,8 @@ class _PlaylistDetailScreenState
                 Center(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(16),
-                    child: Image.network(
-                      widget.playlistImageUrl,
+                    child: MusicImage(
+                      imageUrl: widget.playlistImageUrl,
                       height: 230,
                       width: 230,
                       fit: BoxFit.cover,
