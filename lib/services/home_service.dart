@@ -4,12 +4,14 @@ import 'package:spotify_app_two/services/api_urls.dart';
 import 'package:spotify_app_two/models/playlist_model.dart';
 import 'package:spotify_app_two/models/category_model.dart';
 import 'package:spotify_app_two/models/album_model.dart';
+import '../utils/helpers.dart';
 
 class HomeService {
   // Get Featured Playlists
   Future<List<Playlist>> getFeaturedPlaylists() async {
     try {
-      final response = await http.get(Uri.parse(ApiUrls.featuredPlaylists));
+      final headers = await getAuthHeaders();
+      final response = await http.get(Uri.parse(ApiUrls.featuredPlaylists), headers: headers);
       final data = jsonDecode(response.body);
 
       List items = data["playlists"]["items"];
@@ -32,7 +34,8 @@ class HomeService {
   // Get Categories (Genres & Moods)
   Future<List<CategoryModel>> getCategories() async {
     try {
-      final response = await http.get(Uri.parse(ApiUrls.categories));
+      final headers = await getAuthHeaders();
+      final response = await http.get(Uri.parse(ApiUrls.categories), headers: headers);
       final data = jsonDecode(response.body);
 
       List items = data["categories"]["items"];
@@ -54,7 +57,8 @@ class HomeService {
   // Get New Releases
   Future<List<AlbumModel>> getNewReleases() async {
     try {
-      final response = await http.get(Uri.parse(ApiUrls.newReleases));
+      final headers = await getAuthHeaders();
+      final response = await http.get(Uri.parse(ApiUrls.newReleases), headers: headers);
       final data = jsonDecode(response.body);
 
       List items = data["albums"]["items"];

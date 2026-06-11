@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'api_urls.dart';
+import '../utils/helpers.dart';
 
 class CategoryService {
   Future<List<Map<String, String>>> getCategoryPlaylists(String categoryId) async {
     try {
       final url = ApiUrls.categoryPlaylists(categoryId);
-      final response = await http.get(Uri.parse(url));
+      final headers = await getAuthHeaders();
+      final response = await http.get(Uri.parse(url), headers: headers);
 
       if (response.statusCode != 200) return [];
 

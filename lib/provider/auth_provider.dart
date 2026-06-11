@@ -24,17 +24,25 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<bool> login(String username, String password) async {
     state = state.copyWith(isLoading: true, error: null);
 
-    final result = await _service.login(username: username, password: password);
+    try {
+      final result = await _service.login(username: username, password: password);
 
-    if (result["success"]) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString("jwt_token", result["token"]);
-      state = state.copyWith(isLoading: false);
-      return true;
-    } else {
+      if (result["success"]) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString("jwt_token", result["token"]);
+        state = state.copyWith(isLoading: false);
+        return true;
+      } else {
+        state = state.copyWith(
+          isLoading: false,
+          error: result["message"],
+        );
+        return false;
+      }
+    } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: result["message"],
+        error: "An unexpected error occurred: ${e.toString()}",
       );
       return false;
     }

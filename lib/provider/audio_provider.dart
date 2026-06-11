@@ -169,6 +169,8 @@ import '../models/song_model.dart';
 
 class AudioState {
   final bool isPlaying;
+  final bool isLoading;
+  final String? errorMessage;
   final String? title;
   final String? artist;
   final String? imageUrl;
@@ -178,6 +180,8 @@ class AudioState {
 
   const AudioState({
     this.isPlaying = false,
+    this.isLoading = false,
+    this.errorMessage,
     this.title,
     this.artist,
     this.imageUrl,
@@ -188,6 +192,9 @@ class AudioState {
 
   AudioState copyWith({
     bool? isPlaying,
+    bool? isLoading,
+    String? errorMessage,
+    bool clearError = false,
     String? title,
     String? artist,
     String? imageUrl,
@@ -197,6 +204,8 @@ class AudioState {
   }) {
     return AudioState(
       isPlaying: isPlaying ?? this.isPlaying,
+      isLoading: isLoading ?? this.isLoading,
+      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       title: title ?? this.title,
       artist: artist ?? this.artist,
       imageUrl: imageUrl ?? this.imageUrl,
@@ -231,6 +240,10 @@ class AudioNotifier extends StateNotifier<AudioState> {
     await _player.seek(position);
   }
 
+  void clearError() {
+    state = state.copyWith(clearError: true);
+  }
+
   // ===== Play with queue =====
   Future<void> playWithQueue({
     required List<SongModel> songs,
@@ -238,11 +251,8 @@ class AudioNotifier extends StateNotifier<AudioState> {
     required String imageUrl,
   }) async {
     final song = songs[index];
-    if ((song.previewUrl ?? "").isEmpty) return;
-
-    await _player.stop();
-    await _player.play(UrlSource(song.previewUrl!));
-
+    
+    // Reset status and set loading state first
     state = state.copyWith(
       queue: songs,
       currentIndex: index,
@@ -250,8 +260,43 @@ class AudioNotifier extends StateNotifier<AudioState> {
       title: song.name,
       artist: song.artistName,
       imageUrl: imageUrl,
-      isPlaying: true,
+      isLoading: true,
+      isPlaying: false,
+      clearError: true,
     );
+    
+    _totalDuration = Duration.zero;
+
+    if ((song.previewUrl ?? "").isEmpty) {
+      state = state.copyWith(
+        isLoading: false,
+        isPlaying: false,
+        errorMessage: "Preview unavailable",
+      );
+      return;
+    }
+
+    try {
+      // Reset/stop the player before loading a new track
+      await _player.stop();
+      
+      // Load and start playing
+      await _player.play(UrlSource(song.previewUrl!));
+      
+      // Ensure playback always starts from 0:00
+      await _player.seek(Duration.zero);
+
+      state = state.copyWith(
+        isLoading: false,
+        isPlaying: true,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        isPlaying: false,
+        errorMessage: "Preview unavailable",
+      );
+    }
   }
 
   Future<void> playNext() async {
@@ -284,8 +329,15 @@ class AudioNotifier extends StateNotifier<AudioState> {
   }
 
   Future<void> resume() async {
-    await _player.resume();
-    state = state.copyWith(isPlaying: true);
+    try {
+      await _player.resume();
+      state = state.copyWith(isPlaying: true);
+    } catch (e) {
+      state = state.copyWith(
+        isPlaying: false,
+        errorMessage: "Preview unavailable",
+      );
+    }
   }
 }
 

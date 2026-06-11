@@ -2,12 +2,14 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'api_urls.dart';
 import '../models/song_model.dart';
+import '../utils/helpers.dart';
 
 class PlaylistService {
   Future<Map<String, dynamic>?> getPlaylistDetails(String playlistId) async {
     try {
       final url = ApiUrls.playlistDetails(playlistId);
-      final response = await http.get(Uri.parse(url));
+      final headers = await getAuthHeaders();
+      final response = await http.get(Uri.parse(url), headers: headers);
 
       if (response.statusCode != 200) return null;
 
@@ -27,6 +29,11 @@ class PlaylistService {
         final track = item["track"];
         if (track == null) continue;
 
+        final previewUrlStr = track["preview_url"];
+        if (!isValidPreviewUrl(previewUrlStr)) {
+          continue;
+        }
+
         final artists = track["artists"] as List?;
         final firstArtist =
             (artists != null && artists.isNotEmpty && artists[0] != null)
@@ -39,7 +46,7 @@ class PlaylistService {
             name: track["name"] ?? "",
             artistName: firstArtist,
             durationMs: track["duration_ms"] ?? 0,
-            previewUrl: track["preview_url"] ?? "",
+            previewUrl: previewUrlStr,
           ),
         );
       }

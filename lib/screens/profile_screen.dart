@@ -118,6 +118,7 @@ class ProfileScreen extends StatelessWidget {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('jwt_token');
 
+    if (!context.mounted) return;
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -167,7 +168,7 @@ class ProfileScreen extends StatelessWidget {
               email,
               style: TextStyle(
                 fontSize: 15,
-                color: Colors.white.withOpacity(0.75),
+                color: Colors.white.withValues(alpha: 0.75),
               ),
             ),
 

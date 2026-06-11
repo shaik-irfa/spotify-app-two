@@ -379,6 +379,19 @@ class _AlbumDetailScreenState
     final audioState = ref.watch(audioProvider);
     final audioController = ref.read(audioProvider.notifier);
 
+    ref.listen(audioProvider, (previous, next) {
+      if (next.errorMessage != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(next.errorMessage!),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+        ref.read(audioProvider.notifier).clearError();
+      }
+    });
+
     return Scaffold(
       backgroundColor: const Color(0xFF111111),
       appBar: AppBar(
@@ -421,9 +434,9 @@ class _AlbumDetailScreenState
                 // SONG LIST
                 ...List.generate(albumState.songs.length, (index) {
                   final song = albumState.songs[index];
-                  final isPlaying =
-                      audioState.previewUrl == song.previewUrl &&
-                      audioState.isPlaying;
+                  final isCurrent = audioState.previewUrl == song.previewUrl;
+                  final isPlaying = isCurrent && audioState.isPlaying;
+                  final isLoading = isCurrent && audioState.isLoading;
 
                   final duration = song.durationMs ?? 0;
                   final mins = duration ~/ 60000;
@@ -453,14 +466,27 @@ class _AlbumDetailScreenState
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       child: Row(
                         children: [
-                          Icon(
-                            isPlaying
-                                ? Icons.pause_circle
-                                : Icons.play_circle_fill,
-                            color:
-                                isPlaying ? Colors.green : Colors.white,
-                            size: 35,
-                          ),
+                          if (isLoading)
+                            const SizedBox(
+                              width: 35,
+                              height: 35,
+                              child: Padding(
+                                padding: EdgeInsets.all(5.0),
+                                child: CircularProgressIndicator(
+                                  color: Colors.green,
+                                  strokeWidth: 2.5,
+                                ),
+                              ),
+                            )
+                          else
+                            Icon(
+                              isPlaying
+                                  ? Icons.pause_circle
+                                  : Icons.play_circle_fill,
+                              color:
+                                  isPlaying ? Colors.green : Colors.white,
+                              size: 35,
+                            ),
                           const SizedBox(width: 14),
                           Expanded(
                             child: Column(
@@ -479,7 +505,7 @@ class _AlbumDetailScreenState
                                   song.artistName ?? "",
                                   style: TextStyle(
                                     color:
-                                        Colors.white.withOpacity(0.7),
+                                        Colors.white.withValues(alpha: 0.7),
                                     fontSize: 13,
                                   ),
                                 ),
@@ -490,7 +516,7 @@ class _AlbumDetailScreenState
                             "$mins:$secs",
                             style: TextStyle(
                               color:
-                                  Colors.white.withOpacity(0.7),
+                                  Colors.white.withValues(alpha: 0.7),
                               fontSize: 13,
                             ),
                           ),

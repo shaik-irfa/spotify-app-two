@@ -1,13 +1,16 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'api_urls.dart';
 import '../models/song_model.dart';
+import '../utils/helpers.dart';
 
 class AlbumService {
   Future<Map<String, dynamic>?> getAlbumDetails(String albumId) async {
     try {
       final url = ApiUrls.albumDetails(albumId);
-      final response = await http.get(Uri.parse(url));
+      final headers = await getAuthHeaders();
+      final response = await http.get(Uri.parse(url), headers: headers);
 
       if (response.statusCode != 200) return null;
 
@@ -23,6 +26,11 @@ class AlbumService {
       List<SongModel> songs = [];
 
       for (final track in trackItems) {
+        final previewUrlStr = track["preview_url"];
+        if (!isValidPreviewUrl(previewUrlStr)) {
+          continue;
+        }
+
         final artists = track["artists"] as List?;
         final firstArtist = (artists != null && artists.isNotEmpty)
             ? artists[0]["name"] ?? "Unknown Artist"
@@ -34,7 +42,7 @@ class AlbumService {
             name: track["name"] ?? "",
             artistName: firstArtist,
             durationMs: track["duration_ms"] ?? 0,
-            previewUrl: track["preview_url"] ?? "",
+            previewUrl: previewUrlStr,
           ),
         );
       }
@@ -45,7 +53,7 @@ class AlbumService {
         "songs": songs,
       };
     } catch (e) {
-      print("AlbumService error: $e");
+      debugPrint("AlbumService error: $e");
       return null;
     }
   }

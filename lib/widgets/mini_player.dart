@@ -311,7 +311,7 @@ class MiniPlayer extends ConsumerWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.7),
+                      color: Colors.white.withValues(alpha: 0.7),
                       fontSize: 12,
                     ),
                   ),
@@ -329,21 +329,34 @@ class MiniPlayer extends ConsumerWidget {
               ),
             ),
 
-            // ===== Play / Pause =====
-            IconButton(
-              onPressed: () {
-                audioState.isPlaying
-                    ? controller.pause()
-                    : controller.resume();
-              },
-              icon: Icon(
-                audioState.isPlaying
-                    ? Icons.pause
-                    : Icons.play_arrow,
-                color: Colors.white,
-                size: 30,
+            // ===== Play / Pause / Loading =====
+            if (audioState.isLoading)
+              const SizedBox(
+                width: 48,
+                height: 48,
+                child: Padding(
+                  padding: EdgeInsets.all(12.0),
+                  child: CircularProgressIndicator(
+                    color: Colors.green,
+                    strokeWidth: 2.5,
+                  ),
+                ),
+              )
+            else
+              IconButton(
+                onPressed: () {
+                  audioState.isPlaying
+                      ? controller.pause()
+                      : controller.resume();
+                },
+                icon: Icon(
+                  audioState.isPlaying
+                      ? Icons.pause
+                      : Icons.play_arrow,
+                  color: Colors.white,
+                  size: 30,
+                ),
               ),
-            ),
 
             // ===== Next =====
             IconButton(

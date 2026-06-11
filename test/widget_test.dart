@@ -1,30 +1,42 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:spotify_app_two/main.dart';
+import 'package:spotify_app_two/models/song_model.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('SongModel Tests', () {
+    test('SongModel deserialization from JSON', () {
+      final json = {
+        'id': '123',
+        'name': 'Test Song',
+        'artist_name': 'Test Artist',
+        'duration_ms': 180000,
+        'preview_url': 'https://example.com/preview.mp3'
+      };
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+      final song = SongModel.fromJson(json);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+      expect(song.id, '123');
+      expect(song.name, 'Test Song');
+      expect(song.artistName, 'Test Artist');
+      expect(song.durationMs, 180000);
+      expect(song.previewUrl, 'https://example.com/preview.mp3');
+    });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    test('SongModel serialization to JSON', () {
+      final song = SongModel(
+        id: '456',
+        name: 'Another Song',
+        artistName: 'Another Artist',
+        durationMs: 240000,
+        previewUrl: 'https://example.com/another.mp3',
+      );
+
+      final json = song.toJson();
+
+      expect(json['id'], '456');
+      expect(json['name'], 'Another Song');
+      expect(json['artist_name'], 'Another Artist');
+      expect(json['duration_ms'], 240000);
+      expect(json['preview_url'], 'https://example.com/another.mp3');
+    });
   });
 }

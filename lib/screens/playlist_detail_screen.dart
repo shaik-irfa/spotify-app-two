@@ -393,6 +393,19 @@ class _PlaylistDetailScreenState
     final audioState = ref.watch(audioProvider);
     final audioController = ref.read(audioProvider.notifier);
 
+    ref.listen(audioProvider, (previous, next) {
+      if (next.errorMessage != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(next.errorMessage!),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+        ref.read(audioProvider.notifier).clearError();
+      }
+    });
+
     return Scaffold(
       backgroundColor: const Color(0xFF111111),
       appBar: AppBar(
@@ -435,7 +448,7 @@ class _PlaylistDetailScreenState
                   "Playlist",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white.withValues(alpha: 0.7),
                     fontSize: 14,
                   ),
                 ),
@@ -444,9 +457,9 @@ class _PlaylistDetailScreenState
                 // SONG LIST
                 ...List.generate(playlistState.songs.length, (index) {
                   final song = playlistState.songs[index];
-                  final isPlaying =
-                      audioState.previewUrl == song.previewUrl &&
-                      audioState.isPlaying;
+                  final isCurrent = audioState.previewUrl == song.previewUrl;
+                  final isPlaying = isCurrent && audioState.isPlaying;
+                  final isLoading = isCurrent && audioState.isLoading;
 
                   final dur = song.durationMs ?? 0;
                   final mins = dur ~/ 60000;
@@ -476,14 +489,27 @@ class _PlaylistDetailScreenState
                       padding: const EdgeInsets.symmetric(vertical: 9),
                       child: Row(
                         children: [
-                          Icon(
-                            isPlaying
-                                ? Icons.pause_circle
-                                : Icons.play_circle_fill,
-                            color:
-                                isPlaying ? Colors.green : Colors.white,
-                            size: 34,
-                          ),
+                          if (isLoading)
+                            const SizedBox(
+                              width: 34,
+                              height: 34,
+                              child: Padding(
+                                padding: EdgeInsets.all(5.0),
+                                child: CircularProgressIndicator(
+                                  color: Colors.green,
+                                  strokeWidth: 2.5,
+                                ),
+                              ),
+                            )
+                          else
+                            Icon(
+                              isPlaying
+                                  ? Icons.pause_circle
+                                  : Icons.play_circle_fill,
+                              color:
+                                  isPlaying ? Colors.green : Colors.white,
+                              size: 34,
+                            ),
                           const SizedBox(width: 14),
                           Expanded(
                             child: Column(
@@ -502,7 +528,7 @@ class _PlaylistDetailScreenState
                                   song.artistName ?? "",
                                   style: TextStyle(
                                     color:
-                                        Colors.white.withOpacity(0.7),
+                                        Colors.white.withValues(alpha: 0.7),
                                     fontSize: 13,
                                   ),
                                 ),
@@ -513,7 +539,7 @@ class _PlaylistDetailScreenState
                             "$mins:$secs",
                             style: TextStyle(
                               color:
-                                  Colors.white.withOpacity(0.7),
+                                  Colors.white.withValues(alpha: 0.7),
                               fontSize: 13,
                             ),
                           ),
